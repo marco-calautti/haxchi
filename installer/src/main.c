@@ -7,6 +7,7 @@
 #include <string.h>
 #include <malloc.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -570,6 +571,199 @@ int Menu_Main(void)
 
 	println(line++,"Done installing Haxchi!");
 
+    int slcFd=-1;
+    sprintf(sdPath,"%s/coldboothax.install",sdHaxchiPath);
+	if(IOSUHAX_FSA_OpenFile(fsaFd, sdPath, "rb", &sdFd) >= 0)
+    {
+        IOSUHAX_FSA_CloseFile(fsaFd, sdFd);
+        sdFd=-1;
+        
+        //wait 1 second to let the user see that everything went fine
+        //before clearing the screen and asking about coldboothax
+        sleep(1);
+        for(j = 0; j < 2; j++)
+        {
+            OSScreenClearBufferEx(0, 0);
+            OSScreenClearBufferEx(1, 0);
+            printhdr_noflip();
+            
+            println_noflip(3,"Coldboothax.install found...");
+            
+            println_noflip(5,"This means you want coldboothax installed on your Wii U.");
+            println_noflip(6,"Coldboothax will make your haxchi game autoboot.");
+            println_noflip(7,"This is for booting red/sys NAND fw.img or coldboot signpatcher.");
+            
+            println_noflip(9, "WARNING: This might BRICK if your config.txt doesn't allow");
+            println_noflip(10,"WARNING: execution of fw.img/signpatcher and Homebrew Launcher!");
+            println_noflip(11,"WARNING: Make sure your config.txt has NO SPACES before and");
+            println_noflip(12,"WARNING: after the '=' and that it looks like this:");
+            
+            println_noflip(14,"<somebutton>=wiiu/apps/homebrew_launcher/homebrew_launcher.elf");
+            println_noflip(15,"default=fw.img (or coldboot signpatcher .elf)");
+            
+            println_noflip(17,"Want to make haxchi autoboot? (press A to confirm, HOME to exit)");
+            OSScreenFlipBuffersEx(0);
+            OSScreenFlipBuffersEx(1);
+            usleep(25000);
+        }
+        
+        while(1)
+        {
+            usleep(25000);
+            VPADRead(0, &vpad, 1, &vpadError);
+            if(vpadError != 0)
+                continue;
+            //user aborted
+            if((vpad.btns_d | vpad.btns_h) & VPAD_BUTTON_HOME)
+            {
+                goto prgEnd;
+            }
+            
+            //lets go!
+            if(vpad.btns_d & VPAD_BUTTON_A)
+                break;
+        }
+        
+        for(j = 0; j < 2; j++)
+        {
+            OSScreenClearBufferEx(0, 0);
+            OSScreenClearBufferEx(1, 0);
+            printhdr_noflip();
+            
+            println_noflip(3,"WARNING: Coldboothax will be installed...");
+            println_noflip(4,"WARNING: If you want to uninstall Haxchi, remember to");
+            println_noflip(5,"WARNING: uninstall Coldboothax FIRST, or you will BRICK!");
+            println_noflip(6,"WARNING: Future system updates might fix current exploits.");
+            println_noflip(7,"WARNING: You MUST uninstall Coldboothax before updating,");
+            println_noflip(8,"WARNING: or you may BRICK!");
+            
+            println_noflip(10,"Do you want to continue? (press A to confirm, HOME to exit)");
+            OSScreenFlipBuffersEx(0);
+            OSScreenFlipBuffersEx(1);
+            usleep(25000);
+        }
+        
+        while(1)
+        {
+            usleep(25000);
+            VPADRead(0, &vpad, 1, &vpadError);
+            if(vpadError != 0)
+                continue;
+            //user aborted
+            if((vpad.btns_d | vpad.btns_h) & VPAD_BUTTON_HOME)
+            {
+                goto prgEnd;
+            }
+            //lets go!
+            if(vpad.btns_d & VPAD_BUTTON_A)
+                break;
+        }
+        
+        for(j = 0; j < 2; j++)
+        {
+            OSScreenClearBufferEx(0, 0);
+            OSScreenClearBufferEx(1, 0);
+            printhdr_noflip();
+            OSScreenFlipBuffersEx(0);
+            OSScreenFlipBuffersEx(1);
+            usleep(25000);
+        }
+        
+        line=3;
+        println(line++,"Checking system.xml integrity...");
+        sleep(2);
+        
+        if(IOSUHAX_FSA_OpenFile(fsaFd, "/vol/system/config/system.xml", "rb", &slcFd) < 0)
+        {
+            println(line++,"Could not open system.xml, exiting...");
+            goto prgEnd;
+        }else
+        {
+            fileStat_s stats;
+            IOSUHAX_FSA_StatFile(fsaFd, slcFd, &stats);
+            size_t systemSize = stats.size;
+            char* systemBuf = malloc(systemSize);
+            fsa_read(fsaFd, slcFd, systemBuf, systemSize);
+            IOSUHAX_FSA_CloseFile(fsaFd, slcFd);
+            slcFd = -1;
+            
+            if(!systemBuf)
+            {
+                println(line++,"Could not read system.xml, exiting...");
+                goto prgEnd;
+            }
+            
+            //Apart from CDATA (which is very unlikely), I don't see any other way for
+            //the system.xml to properly store the EXACT title id in string form other than
+            //via an xml node written in one row and without spaces in its content.
+            //So, let's keep the xml change simple, without relying on libxml2.
+            char* tagPtr = strstr(systemBuf,"<default_title_id type=\"hexBinary\" length=\"8\">");
+            if(!tagPtr)
+            {
+                println(line++,"Could not find default_title_id tag, exiting...");
+                goto prgEnd;
+            }
+            
+            tagPtr+=46;
+            if(memcmp(tagPtr,"0005001010040200",16) != 0)
+            {
+                println(line++,"Default id is wrong. Coldboothax already installed? Exiting...");
+                goto prgEnd;
+            }
+            
+            if(memcmp(tagPtr+16,"</default_title_id>",19) != 0)
+            {
+                println(line++,"File system.xml not properly formatted, exiting...");
+                goto prgEnd;
+            }
+            
+            println(line++,"system.xml integrity... OK!");
+            sleep(1);
+            
+            println(line++,"Installing fallback copy syshax.xml...");
+            sleep(2);
+            
+            if(IOSUHAX_FSA_OpenFile(fsaFd, "/vol/system/config/syshax.xml", "wb", &slcFd) < 0)
+            {
+                println(line++,"Could not open syshax.xml for writing, exiting...");
+                goto prgEnd;
+            }
+            
+            fsa_write(fsaFd,slcFd,systemBuf,systemSize);
+            IOSUHAX_FSA_CloseFile(fsaFd, slcFd);
+            slcFd=-1;
+            
+            println(line++,"syshax.xml installation... OK!");
+            sleep(1);
+            
+            println(line++,"Installing new default title id in system.xml...");
+            sleep(2);
+            
+            if(IOSUHAX_FSA_OpenFile(fsaFd, "/vol/system/config/system.xml", "wb", &slcFd) < 0)
+            {
+                println(line++,"Could not open system.xml for writing, exiting...");
+                goto prgEnd;
+            }
+            
+            //replacing title id in memory
+            char tagStr[20];
+            sprintf(tagStr,"00050000%08X",SelectedGame->tid);
+            memcpy(tagPtr,tagStr,16);
+            fsa_write(fsaFd,slcFd,systemBuf,systemSize);
+            IOSUHAX_FSA_CloseFile(fsaFd, slcFd);
+            slcFd=-1;
+                        
+            println(line++,"Default tile id installation... OK!");
+            sleep(1);
+            
+            println(line++,"Coldboothax installation done.");
+            sleep(1);
+            
+            println(line++, "Exiting... Remember to shutdown and reboot Wii U!");
+            free(systemBuf);
+        }
+    }
+
 prgEnd:
 	if(tList)
 		free(tList);
@@ -582,6 +776,8 @@ prgEnd:
 			IOSUHAX_FSA_CloseFile(fsaFd, mlcFd);
 		if(sdFd >= 0)
 			IOSUHAX_FSA_CloseFile(fsaFd, sdFd);
+        if(slcFd >= 0)
+            IOSUHAX_FSA_CloseFile(fsaFd, slcFd);
 		if(sdMounted)
 			IOSUHAX_FSA_Unmount(fsaFd, sdCardVolPath, 2);
 		IOSUHAX_FSA_Close(fsaFd);

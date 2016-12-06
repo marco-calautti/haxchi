@@ -1,2 +1,3 @@
-a=fw.img
-default=wiiu/apps/homebrew_launcher/homebrew_launcher.elf
+a=wiiu/apps/homebrew_launcher/homebrew_launcher.elf
+default=fw.img
+
