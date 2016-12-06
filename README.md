@@ -2,8 +2,8 @@
 This is a branch of Haxchi which will also install coldboothax, making your Haxchi game
 autoboot when you turn on your Wii U.
 
-To trigger the coldboothax installation, an emptyfile name coldboothax.install needs to be placed
-in the haxchi folder, i.e.sd:/haxchi/coldboothax.install
+To trigger the coldboothax installation, an empty file named coldboothax.install needs to be placed
+in the haxchi folder, i.e. sd:/haxchi/coldboothax.install
 
 This branch already provides the file above in the Haxchi folder.
 
