@@ -1,7 +1,11 @@
-# Haxchi
+# Haxchi-coldboot
+This is a branch of Haxchi which will also install coldboothax, making your Haxchi game
+autoboot when you turn on your Wii U.
 
-This is the continuation of the POC Haxchi exploit by smea.  
-It features compatibility with a lot of DS VC and can be easly installed and further configured.
+To trigger the coldboothax installation, an emptyfile name coldboothax.install needs to be placed
+in the haxchi folder, i.e.sd:/haxchi/coldboothax.install
+
+This branch already provides the file above in the Haxchi folder.
 
 ## Installation
 
