@@ -183,7 +183,7 @@ uint32_t __main(void)
     //For example, a=wiiu//apps/..., in this case Haxchi will recognize at least a valid button mapping, and will always try to
     //run the associated path when pushing the button, but will fail. In this case, the fallback to HBL will never have a chance to work.
     //Checking a a recovery button combination first.
-    if(vpad_data.btns_h & (BUTTON_L | BUTTON_R | BUTTON_DOWN | BUTTON_A))
+    if((vpad_data.btns_h & BUTTON_L) &&  (vpad_data.btns_h & BUTTON_R) && (vpad_data.btns_h & BUTTON_DOWN) && (vpad_data.btns_h & BUTTON_A))
     {
         strcpy((void*)0xF5E70000,"/vol/external01/recovery.elf");
         goto fileEnd;
