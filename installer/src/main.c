@@ -159,24 +159,39 @@ int Menu_Main(void)
 	memset(gAvail, 0, recievedCount*sizeof(parsedList_t));
 
 	int i, j;
+    uint32_t menu_id=0;
+    
 	for(i = 0; i < recievedCount; i++)
 	{
 		char *cListElm = tList+(i*0x61);
-		if(memcmp(cListElm+0x56,"mlc",4) != 0 || *(uint32_t*)(cListElm) != 0x00050000)
+		if(memcmp(cListElm+0x56,"mlc",4) != 0)
 			continue;
-		for(j = 0; j < GameListSize; j++)
-		{
-			if(*(uint32_t*)(cListElm+4) == GameList[j].tid)
-			{
-				gAvail[gAvailCnt].tid = GameList[j].tid;
-				memcpy(gAvail[gAvailCnt].name, GameList[j].name, 64);
-				memcpy(gAvail[gAvailCnt].path, cListElm+0xC, 64);
-				gAvail[gAvailCnt].romPtr = GameList[j].romPtr;
-				gAvail[gAvailCnt].romSize = *(GameList[j].romSizePtr);
-				gAvailCnt++;
-				break;
-			}
-		}
+        
+        //let's find the system menu id;
+        if(*(uint32_t*)(cListElm) == 0x00050010)
+        {
+            if( *(uint32_t*)(cListElm+4) == 0x10040200 || //EUR
+                *(uint32_t*)(cListElm+4) == 0x10040100 || //USA
+                *(uint32_t*)(cListElm+4) == 0x10040000)   //JAP  
+            {
+                menu_id = *(uint32_t*)(cListElm+4);
+            }
+        }else if(*(uint32_t*)(cListElm) == 0x00050000)
+        {
+            for(j = 0; j < GameListSize; j++)
+            {
+                if(*(uint32_t*)(cListElm+4) == GameList[j].tid)
+                {
+                    gAvail[gAvailCnt].tid = GameList[j].tid;
+                    memcpy(gAvail[gAvailCnt].name, GameList[j].name, 64);
+                    memcpy(gAvail[gAvailCnt].path, cListElm+0xC, 64);
+                    gAvail[gAvailCnt].romPtr = GameList[j].romPtr;
+                    gAvail[gAvailCnt].romSize = *(GameList[j].romSizePtr);
+                    gAvailCnt++;
+                    break;
+                }
+            }
+        }
 	}
 
 	int vpadError = -1;
@@ -670,6 +685,13 @@ int Menu_Main(void)
         }
         
         line=3;
+        
+        if(!menu_id)
+        {
+            println(line++,"Could not retrieve system menu id, exiting...");
+            goto prgEnd;
+        }
+        
         println(line++,"Checking system.xml integrity...");
         sleep(2);
         
@@ -705,13 +727,13 @@ int Menu_Main(void)
             }
             
             tagPtr+=46;
-            if( memcmp(tagPtr,"0005001010040200",16) != 0 && //EUR
+            /*if( memcmp(tagPtr,"0005001010040200",16) != 0 && //EUR
                 memcmp(tagPtr,"0005001010040100",16) != 0 && //USA
                 memcmp(tagPtr,"0005001010040000",16) != 0)  //JAP
             {
                 println(line++,"Default id is wrong. Coldboothax already installed? Exiting...");
                 goto prgEnd;
-            }
+            }*/
             
             if(memcmp(tagPtr+16,"</default_title_id>",19) != 0)
             {
@@ -725,12 +747,17 @@ int Menu_Main(void)
             println(line++,"Installing fallback copy syshax.xml...");
             sleep(2);
             
+            
             if(IOSUHAX_FSA_OpenFile(fsaFd, "/vol/system/config/syshax.xml", "wb", &slcFd) < 0)
             {
                 println(line++,"Could not open syshax.xml for writing, exiting...");
                 goto prgEnd;
             }
             
+            //set current console system menu id in xml.
+            char tagStr[20];
+            sprintf(tagStr,"00050010%08X",menu_id);
+            memcpy(tagPtr,tagStr,16);
             fsa_write(fsaFd,slcFd,systemBuf,systemSize);
             IOSUHAX_FSA_CloseFile(fsaFd, slcFd);
             slcFd=-1;
@@ -748,14 +775,13 @@ int Menu_Main(void)
             }
             
             //replacing title id in memory
-            char tagStr[20];
             sprintf(tagStr,"00050000%08X",SelectedGame->tid);
             memcpy(tagPtr,tagStr,16);
             fsa_write(fsaFd,slcFd,systemBuf,systemSize);
             IOSUHAX_FSA_CloseFile(fsaFd, slcFd);
             slcFd=-1;
                         
-            println(line++,"Default tile id installation... OK!");
+            println(line++,"Default title id installation... OK!");
             sleep(1);
             
             println(line++,"Coldboothax installation done.");
