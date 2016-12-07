@@ -7,6 +7,11 @@ in the haxchi folder, i.e. sd:/haxchi/coldboothax.install
 
 This branch already provides the file above in the Haxchi folder.
 
+Features:
+- Safe coldboothax installation.
+- Regardless of config.txt, by pushing L + R + dpad_down + A during boot the elf sd:/recovery.elf will be executed.  This allows for recovering in case config.txt or something else was wrong.
+- Coldboothax can be reinstalled over a previous installation safely.
+
 ## Installation
 
 If you happen to have a DS VC title [that is listed in this file](installer/src/gameList.h#L14-L102) then go ahead and grab the current Haxchi .zip file from the "releases" tab, make sure to NOT click on "source code" instead of the current .zip.  
