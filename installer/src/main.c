@@ -705,7 +705,9 @@ int Menu_Main(void)
             }
             
             tagPtr+=46;
-            if(memcmp(tagPtr,"0005001010040200",16) != 0)
+            if( memcmp(tagPtr,"0005001010040200",16) != 0 && //EUR
+                memcmp(tagPtr,"0005001010040100",16) != 0 && //USA
+                memcmp(tagPtr,"0005001010040000",16) != 0)  //JAP
             {
                 println(line++,"Default id is wrong. Coldboothax already installed? Exiting...");
                 goto prgEnd;
