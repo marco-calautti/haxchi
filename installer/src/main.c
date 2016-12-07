@@ -122,7 +122,7 @@ int availSort(const void *c1, const void *c2)
 
 void printhdr_noflip()
 {
-	println_noflip(0,"Haxchi v2.2u1 by FIX94");
+	println_noflip(0,"Haxchi v2.2u1 by FIX94 (coldboothax mod by Phoenix)");
 	println_noflip(1,"Credits to smea, plutoo, yellows8, naehrwert, derrek and dimok");
 }
 
@@ -604,17 +604,17 @@ int Menu_Main(void)
             
             println_noflip(3,"Coldboothax.install found...");
             
-            println_noflip(5,"This means you want coldboothax installed on your Wii U.");
-            println_noflip(6,"Coldboothax will make your haxchi game autoboot.");
-            println_noflip(7,"This is for booting red/sys NAND fw.img or coldboot signpatcher.");
+            println_noflip(5,"Installing Coldboothax will make your haxchi game autoboot.");
+            println_noflip(6,"This is meant for autobooting one of the following:");
             
-            println_noflip(9, "WARNING: This might BRICK if your config.txt doesn't allow");
-            println_noflip(10,"WARNING: execution of fw.img/signpatcher and Homebrew Launcher!");
-            println_noflip(11,"WARNING: Make sure your config.txt has NO SPACES before and");
-            println_noflip(12,"WARNING: after the '=' and that it looks like this:");
+            println_noflip(8,"1. sysNAND fw.img compiled via make cfw-coldboot");
+            println_noflip(9,"2. redNAND fw.img");
+            println_noflip(10,"3. signpatcher with coldboot support");
             
-            println_noflip(14,"<somebutton>=wiiu/apps/homebrew_launcher/homebrew_launcher.elf");
-            println_noflip(15,"default=fw.img (or coldboot signpatcher .elf)");
+            println_noflip(12,"WARNING: If not using one of the above as default in config.txt");
+            println_noflip(13,"WARNING: You will not be able to boot your Wii U!");
+            println_noflip(14,"WARNING: In this case, you can load sd:/recovery.elf by pushing");
+            println_noflip(15,"WARNING: L+R+dpad_down+A when Haxchi boots and recover from brick.");
             
             println_noflip(17,"Want to make haxchi autoboot? (press A to confirm, HOME to exit)");
             OSScreenFlipBuffersEx(0);
@@ -646,7 +646,7 @@ int Menu_Main(void)
             printhdr_noflip();
             
             println_noflip(3,"WARNING: Coldboothax will be installed...");
-            println_noflip(4,"WARNING: If you want to uninstall Haxchi or format, remember to");
+            println_noflip(4,"WARNING: If you want to uninstall Haxchi or format the Wii U");
             println_noflip(5,"WARNING: uninstall Coldboothax FIRST, or you will BRICK!");
             println_noflip(6,"WARNING: Future system updates might fix current exploits.");
             println_noflip(7,"WARNING: You MUST uninstall Coldboothax before updating,");
