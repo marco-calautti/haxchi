@@ -607,8 +607,8 @@ int Menu_Main(void)
             println_noflip(5,"Installing Coldboothax will make your haxchi game autoboot.");
             println_noflip(6,"This is meant for autobooting one of the following:");
             
-            println_noflip(8,"1. sysNAND fw.img compiled via make cfw-coldboot");
-            println_noflip(9,"2. redNAND fw.img");
+            println_noflip(8, "1. sysNAND fw.img compiled via make cfw-coldboot");
+            println_noflip(9, "2. redNAND fw.img");
             println_noflip(10,"3. signpatcher with coldboot support");
             
             println_noflip(12,"WARNING: If not using one of the above as default in config.txt");
@@ -684,8 +684,7 @@ int Menu_Main(void)
             usleep(25000);
         }
         
-        line=3;
-        
+        line=3;        
         if(!menu_id)
         {
             println(line++,"Could not retrieve system menu id, exiting...");
@@ -727,13 +726,6 @@ int Menu_Main(void)
             }
             
             tagPtr+=46;
-            /*if( memcmp(tagPtr,"0005001010040200",16) != 0 && //EUR
-                memcmp(tagPtr,"0005001010040100",16) != 0 && //USA
-                memcmp(tagPtr,"0005001010040000",16) != 0)  //JAP
-            {
-                println(line++,"Default id is wrong. Coldboothax already installed? Exiting...");
-                goto prgEnd;
-            }*/
             
             if(memcmp(tagPtr+16,"</default_title_id>",19) != 0)
             {
@@ -746,7 +738,6 @@ int Menu_Main(void)
             
             println(line++,"Installing fallback copy syshax.xml...");
             sleep(2);
-            
             
             if(IOSUHAX_FSA_OpenFile(fsaFd, "/vol/system/config/syshax.xml", "wb", &slcFd) < 0)
             {
