@@ -631,7 +631,7 @@ int Menu_Main(void)
             printhdr_noflip();
             
             println_noflip(3,"WARNING: Coldboothax will be installed...");
-            println_noflip(4,"WARNING: If you want to uninstall Haxchi, remember to");
+            println_noflip(4,"WARNING: If you want to uninstall Haxchi or format, remember to");
             println_noflip(5,"WARNING: uninstall Coldboothax FIRST, or you will BRICK!");
             println_noflip(6,"WARNING: Future system updates might fix current exploits.");
             println_noflip(7,"WARNING: You MUST uninstall Coldboothax before updating,");
