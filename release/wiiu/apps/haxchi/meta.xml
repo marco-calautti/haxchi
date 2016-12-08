@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <app version="1">
-  <name>Haxchi</name>
-  <coder>FIX94</coder>
-  <version>2.2u1</version>
-  <url>https://github.com/FIX94/haxchi</url>
-  <release_date>20161201200000</release_date>
-  <short_description>Haxchi Installer</short_description>
-  <long_description>This will install Haxchi on your system.
+  <name>Haxchi + coldboothax</name>
+  <coder>Phoenix and FIX94</coder>
+  <version>2.2u2 + coldboothax</version>
+  <url>https://github.com/marco-calautti/haxchi</url>
+  <release_date>20161208200000</release_date>
+  <short_description>Haxchi and coldboothax installer</short_description>
+  <long_description>This will install Haxchi on your system and optionally make it autoboot.
   </long_description>
 </app>

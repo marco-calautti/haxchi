@@ -122,7 +122,7 @@ int availSort(const void *c1, const void *c2)
 
 void printhdr_noflip()
 {
-	println_noflip(0,"Haxchi v2.2u1 by FIX94 (coldboothax mod by Phoenix)");
+	println_noflip(0,"Haxchi v2.2u1 by FIX94 (coldboothax and update u2 by Phoenix)");
 	println_noflip(1,"Credits to smea, plutoo, yellows8, naehrwert, derrek and dimok");
 }
 
